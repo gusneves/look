@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   StyleSheet,
   Image,
   ScrollView,
@@ -11,6 +9,9 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { MaterialIcons } from "@expo/vector-icons";
+
+import Rating from "../components/Rating";
+import Genres from "../components/Genres";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -26,6 +27,8 @@ export default function Info({ navigation, route }) {
     genres,
     director,
   } = route.params.details;
+
+  console.log(id);
   const posterpath = "https://image.tmdb.org/t/p/original/" + poster_path;
 
   return (
@@ -44,20 +47,20 @@ export default function Info({ navigation, route }) {
               ? title + " (" + release_date.slice(0, 4) + ")"
               : title + " (----)"}
           </Text>
-          <Text style={styles.rate}>{vote_average}/10</Text>
-          <Text style={styles.rate}>
-            {genres.map((value, index) => {
-              if (index != genres.length - 1) return value.name + ", ";
-              else return value.name;
-            })}
-          </Text>
+          <Rating rating={vote_average} />
+          
           <Text style={styles.rate}>Directed by: {director.name}</Text>
           <Text style={styles.overview}>
             {overview ? overview : "Overview not avaliable"}
           </Text>
+          {genres.length > 0 ? (
+            <Genres genres={genres} />
+          ) : (
+            <Text style={styles.no_genre}>No genres provided</Text>
+          )}
         </View>
 
-        <StatusBar style="inverted" />
+        <StatusBar style="inverted" hidden={true} />
       </ScrollView>
     </View>
   );
@@ -72,7 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "#FEF9FF",
     fontWeight: "800",
-    marginVertical: 15,
+    marginTop: 15,
   },
   rate: {
     fontStyle: "italic",
@@ -98,6 +101,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#ECE2D0",
     elevation: 10,
+  },
+  no_genre:{
+    alignSelf: "center",
+    fontSize: 12,
+    color: "#DDD",
+    marginTop: 10,
+    padding: 3,
   },
   textContainer: {
     paddingHorizontal: 15,
