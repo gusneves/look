@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  NavigationContainer,
-  navigationContainer,
-} from "@react-navigation/native";
+import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
@@ -23,9 +20,18 @@ function InfoStack({ navigation }) {
         component={Main}
         options={{
           headerShown: false,
-          headerLeft: () =>{
-              return <Feather name="list" size={20} color="#000" onPress={() => { navigation.openDrawer()}}/>
-          }
+          headerLeft: () => {
+            return (
+              <Feather
+                name="list"
+                size={20}
+                color="#000"
+                onPress={() => {
+                  navigation.openDrawer();
+                }}
+              />
+            );
+          },
         }}
       />
       <Stack.Screen
@@ -33,6 +39,7 @@ function InfoStack({ navigation }) {
         component={Info}
         options={{
           headerTitleAlign: "center",
+          title: "About",
         }}
       />
     </Stack.Navigator>
@@ -41,7 +48,7 @@ function InfoStack({ navigation }) {
 
 export default function Router() {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={DarkTheme}>
       <Drawer.Navigator backBehavior="history" initialRouteName="Search">
         <Drawer.Screen
           name="Search"
