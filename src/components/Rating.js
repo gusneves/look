@@ -21,6 +21,6 @@ const styles = StyleSheet.create({
   ratingNumber: { marginRight: 4, fontSize: 14, color: "#FEF9FF"},
   rating: {
     flexDirection: 'row',
-    marginVertical: 10
+    marginTop: 10
   },
 });

@@ -19,8 +19,7 @@ const styles = StyleSheet.create({
   genres: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-    marginTop: 15
+    marginVertical: 10
   },
   genre: {
     paddingHorizontal: 6,

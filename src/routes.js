@@ -3,11 +3,11 @@ import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 
-import Main from "./Screens/Main";
-import Info from "./Screens/Info";
-import Fav from "./Screens/Fav";
+import Main from "./screens/Main";
+import Info from "./screens/Info";
+import List from "./screens/List";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -55,16 +55,16 @@ export default function Router() {
           component={InfoStack}
           options={{
             drawerIcon: ({ color }) => {
-              return <Feather name="search" size={20} color={color} />;
+              return <MaterialIcons name="search" size={24} color={color} />;
             },
           }}
         />
         <Drawer.Screen
-          name="Favourites"
-          component={Fav}
+          name="My List"
+          component={List}
           options={{
             drawerIcon: ({ color }) => {
-              return <AntDesign name="staro" size={20} color={color} />;
+              return <AntDesign name="tag" size={24} color={color} />;
             },
           }}
         />

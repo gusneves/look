@@ -16,8 +16,9 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
-import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
+
+import { queryMovie, getDetails, getCredits } from "../services/api";
 
 const { width, height } = Dimensions.get("window");
 const ITEM_SIZE = Platform.OS === "ios" ? width * 0.78 : width * 0.8;
@@ -26,16 +27,12 @@ export default function Main({ navigation }) {
   const [result, setResult] = useState([]);
   const [query, setQuery] = useState("");
   const [empty, setEmpty] = useState(false);
-  const [star, setStar] = useState("star-outline");
 
   const posterpath = "https://image.tmdb.org/t/p/original/";
 
-  async function executeQuery(search) {
-    await axios
-      .get(
-        "https://api.themoviedb.org/3/search/movie?api_key=eb2f3bd9659b7a07bbb515ec2adf6930&query=" +
-          search
-      )
+  function handleSubmit() {
+    Keyboard.dismiss();
+    queryMovie(query)
       .then(({ data }) => {
         if (data.total_results == 0) setEmpty(true);
         else {
@@ -44,28 +41,8 @@ export default function Main({ navigation }) {
         }
       })
       .catch((e) => {
-        console.log(e);
+        Alert.alert("Error", e.message);
       });
-  }
-
-  async function getDetails(id) {
-    return await axios.get(
-      "https://api.themoviedb.org/3/movie/" +
-        id +
-        "?api_key=eb2f3bd9659b7a07bbb515ec2adf6930"
-    );
-  }
-  async function getCredits(id) {
-    return await axios.get(
-      "https://api.themoviedb.org/3/movie/" +
-        id +
-        "/credits?api_key=eb2f3bd9659b7a07bbb515ec2adf6930"
-    );
-  }
-
-  function handleSubmit() {
-    Keyboard.dismiss();
-    executeQuery(query);
   }
 
   return (
@@ -95,7 +72,9 @@ export default function Main({ navigation }) {
         )}
       </LinearGradient>
       {empty ? (
-        <Text style={{fontSize: 18, color:"#EDEDED"}} >Nothing was found, try again</Text>
+        <Text style={{ fontSize: 18, color: "#EDEDED" }}>
+          Nothing was found, try again
+        </Text>
       ) : (
         <FlatList
           data={result}
@@ -108,14 +87,13 @@ export default function Main({ navigation }) {
           renderItem={({ item }) => {
             return (
               <TouchableOpacity
-                onPress={async () => {
-                  let details = [];
-                  details.fin;
-                  await getDetails(item.id)
+                onPress={() => {
+                  let details;
+                  getDetails(item.id)
                     .then(async ({ data }) => {
                       details = data;
 
-                      await getCredits(item.id)
+                      getCredits(item.id)
                         .then(({ data }) => {
                           details = {
                             ...details,
@@ -126,11 +104,11 @@ export default function Main({ navigation }) {
                           navigation.navigate("Info", { details });
                         })
                         .catch((e) => {
-                          Alert("Error");
+                          Alert.alert("Error", e.message);
                         });
                     })
                     .catch((e) => {
-                      Alert("Error");
+                      Alert.alert("Error", e.message);
                     });
                 }}
               >
@@ -213,7 +191,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
-    fontSize: 20
+    fontSize: 20,
   },
   button: {
     height: 55,
@@ -249,7 +227,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "800",
     color: "#FEF9FF",
-    fontFamily: 'Menlo'
+    fontFamily: "Menlo",
   },
   textGradient: {
     position: "absolute",
