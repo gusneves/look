@@ -1,79 +1,103 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  FlatList,
+  Image,
+  Platform
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 
-import { getDetails, getCredits } from "../services/api";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
-export default function List() {
-  const [list, setList] = useState([]);
-  const [result, setResult] = useState([]);
+export default function List({ navigation }) {
+  const [list, setList] = useState();
+
+  const posterpath = "https://image.tmdb.org/t/p/original/";
 
   async function getList() {
     try {
-      const response = await AsyncStorage.getItem("list");
-      if (response != null) {
-        const stored = response.split(",").map((value) => {
-          return value;
-        });
-        console.log(stored);
-        setList(stored);
-      }
+      const jsonValue = await AsyncStorage.getItem("list");
+      setList(JSON.parse(jsonValue));
     } catch (error) {
-      Alert.alert("Failed to load list", error.message);
+      Alert.alert("Failed to get list", error.message);
     }
   }
 
-  async function getResults() {
-    list.map((value) => {
-      let details;
-      getDetails(value)
-        .then(async ({ data }) => {
-          details = data;
-
-          getCredits(value)
-            .then(({ data }) => {
-              details = {
-                ...details,
-                director: data.crew.find((person) => person.job == "Director"),
-              };
-              setResult((result) => [...result, details]);
-            })
-            .catch((e) => {
-              Alert.alert("Error", e.message);
-            });
-        })
-        .catch((e) => {
-          Alert.alert("Error", e.message);
-        });
-    });
-  }
-
   useEffect(() => {
-    getList();
-    getResults();
-  }, []);
+    const unsubscribe = navigation.addListener("focus", () => {
+      getList();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>My List</Text>
+  while (list == undefined) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.text}> Loading... </Text>
+      </SafeAreaView>
+    );
+  }
+  if (list.length == 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.overview}>Your list is currently empty</Text>
+      </SafeAreaView>
+    );
+  } else {
+    return (
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={list}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  const details = item;
+                  navigation.navigate("Info", { details });
+                }}
+              >
+                <View style={styles.listItem}>
+                  <View style={styles.imageContainer}>
+                    {item.poster_path ? (
+                      <Image
+                        source={{ uri: posterpath + item.poster_path }}
+                        style={styles.image}
+                      />
+                    ) : (
+                      <View style={styles.no_image}>
+                        <MaterialIcons name="image" size={45} color="#DDD" />
+                      </View>
+                    )}
+                  </View>
+                  <View style={styles.movieText}>
+                    <Text style={styles.title}>
+                      {item.release_date
+                        ? item.title +
+                          " (" +
+                          item.release_date.slice(0, 4) +
+                          ")"
+                        : item.title + " (----)"}
+                    </Text>
+                    <Text style={styles.overview} numberOfLines={5}>
+                      {item.overview ? item.overview : "Overview not avaliable"}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
 
-      <FlatList
-        data={result}
-        keyExtractor={() => {
-          list.map((value) => {
-            return value;
-          });
-        }}
-        renderItem={({ item }) => {
-          return <Text style={styles.text} >{item.name}</Text>;
-        }}
-      />
-
-      <StatusBar style="auto" />
-    </SafeAreaView>
-  );
+        <StatusBar style="inverted" />
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -82,14 +106,69 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     fontSize: 18,
+    backgroundColor: "#121212"
   },
-  title: {
+  header: {
+    marginTop: 60,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerTitle: {
     fontSize: 24,
-    backgroundColor: "#FEF9FF",
-    fontFamily: "Menlo",
+    color: "#FEF9FF",
   },
   text: {
     fontSize: 14,
     color: "#FFF",
+  },
+  listItem: {
+    flexDirection: "row",
+    margin: 20,
+    backgroundColor: "#232323",
+    paddingRight: 12,
+    width: 325,
+    borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  imageContainer: {
+    backgroundColor: "white",
+    width: "30%",
+    height: "100%",
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+  },
+  no_image: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#FEF9FF",
+    marginBottom: 10,
+  },
+  overview: {
+    fontSize: 16,
+    color: "#DDD",
+    textAlign: "justify",
+    lineHeight: 24
+  },
+  movieText: {
+    flex: 1,
+    marginLeft: 12,
+    paddingVertical: 15,
   },
 });

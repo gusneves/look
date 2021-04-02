@@ -1,9 +1,14 @@
 import React from "react";
-import { NavigationContainer, DarkTheme } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  NavigationContainer,
+  DarkTheme,
+} from "@react-navigation/native";
+import {
+  createStackNavigator,
+} from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons, Feather } from "@expo/vector-icons";
 
 import Main from "./screens/Main";
 import Info from "./screens/Info";
@@ -19,15 +24,20 @@ function InfoStack({ navigation }) {
         name="Search"
         component={Main}
         options={{
-          headerShown: false,
+          headerShown: true,
+          headerTitleAlign: "center",
+
           headerLeft: () => {
             return (
               <Feather
                 name="list"
-                size={20}
-                color="#000"
+                size={24}
+                color="#FEF9FF"
                 onPress={() => {
                   navigation.openDrawer();
+                }}
+                style={{
+                  marginLeft: 15,
                 }}
               />
             );
@@ -46,10 +56,51 @@ function InfoStack({ navigation }) {
   );
 }
 
-export default function Router() {
+function ListStack({ navigation }) {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="My List"
+        component={List}
+        options={{
+          headerShown: true,
+          headerTitleAlign: "center",
+          drawerIcon: ({ color }) => {
+            return <AntDesign name="tag" size={24} color={color} />;
+          },
+          headerLeft: () => {
+            return (
+              <Feather
+                name="list"
+                size={24}
+                color="#FEF9FF"
+                onPress={() => {
+                  navigation.openDrawer();
+                }}
+                style={{
+                  marginLeft: 15,
+                }}
+              />
+            );
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Info"
+        component={Info}
+        options={{
+          headerTitleAlign: "center",
+          title: "About",
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+export default function Router({ navigation }) {
   return (
     <NavigationContainer theme={DarkTheme}>
-      <Drawer.Navigator backBehavior="history" initialRouteName="Search">
+      <Drawer.Navigator initialRouteName="Search">
         <Drawer.Screen
           name="Search"
           component={InfoStack}
@@ -61,7 +112,7 @@ export default function Router() {
         />
         <Drawer.Screen
           name="My List"
-          component={List}
+          component={ListStack}
           options={{
             drawerIcon: ({ color }) => {
               return <AntDesign name="tag" size={24} color={color} />;

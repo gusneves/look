@@ -137,8 +137,7 @@ export default function Main({ navigation }) {
                           color="#aaa"
                         />
                         <Text style={{ fontSize: 14, color: "#ddd" }}>
-                          {" "}
-                          No image avaliable{" "}
+                          No image avaliable
                         </Text>
                       </View>
                     )}
@@ -180,7 +179,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 40,
-    marginTop: 0.1 * height,
     marginBottom: 0.1 * height,
   },
   input: {
