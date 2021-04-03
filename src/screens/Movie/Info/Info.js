@@ -1,25 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
-  View,
   Text,
   StyleSheet,
   Image,
   ScrollView,
-  Dimensions,
   Alert,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
-
-import Rating from "../components/Rating";
-import Genres from "../components/Genres";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect } from "react";
-import { useState } from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 
-const { width, height } = Dimensions.get("window");
+import Rating from "../../../components/Rating/Rating";
+import Genres from "../../../components/Genres/Genres";
+
+import {
+  Wrapper,
+  Title,
+  TextContainer,
+  Overview,
+  Director,
+  Button,
+  ButtonText,
+  NoImage,
+} from "./styles";
 
 export default function Info({ navigation, route }) {
   const [included, setIncluded] = useState(false);
@@ -33,6 +37,7 @@ export default function Info({ navigation, route }) {
     overview,
     release_date,
     vote_average,
+    runtime,
     id,
     genres,
     director,
@@ -79,6 +84,7 @@ export default function Info({ navigation, route }) {
           overview,
           release_date,
           vote_average,
+          runtime,
           id,
           genres,
           director,
@@ -112,119 +118,57 @@ export default function Info({ navigation, route }) {
   }
 
   return (
-    <View style={styles.container}>
+    <Wrapper>
       {poster_path ? (
         <Image
           source={{ uri: posterpath }}
           style={[StyleSheet.absoluteFillObject]}
         />
       ) : (
-        <View style={[StyleSheet.absoluteFillObject, styles.no_image]}>
+        <NoImage>
           <MaterialIcons name="broken-image" size={80} color="#AAA" />
           <Text style={{ fontSize: 14, color: "#ddd" }}>
             No image avaliable
           </Text>
-        </View>
+        </NoImage>
       )}
       <ScrollView style={{ flex: 1 }} bounces={true}>
         <LinearGradient colors={["transparent", "#121212"]}>
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>
+          <TextContainer>
+            <Title>
               {release_date
                 ? title + " (" + release_date.slice(0, 4) + ")"
                 : title + " (----)"}
-            </Text>
+            </Title>
             <Rating rating={vote_average} />
-            {genres.length > 0 ? (
-              <Genres genres={genres} />
-            ) : (
-              <Text style={styles.no_genre}>No genres provided</Text>
-            )}
 
-            <Text style={styles.rate}>
+            <Genres genres={genres} />
+
+            <Director>
               Directed by:{" "}
               {director === undefined ? "director not found" : director.name}
-            </Text>
-            <Text style={styles.overview}>
+            </Director>
+            <Director>Duration: {runtime} min</Director>
+            <Overview>
               {overview ? overview : "Overview not avaliable"}
-            </Text>
+            </Overview>
 
             {included ? (
-              <TouchableOpacity
-                style={styles.addToList}
-                onPress={removeFromList}
-              >
+              <Button onPress={removeFromList}>
                 <Feather name={icon} size={22} color="tomato" />
-                <Text style={styles.buttonText}>{text}</Text>
-              </TouchableOpacity>
+                <ButtonText>{text}</ButtonText>
+              </Button>
             ) : (
-              <TouchableOpacity style={styles.addToList} onPress={addToList}>
+              <Button onPress={addToList}>
                 <Feather name={icon} size={22} color="tomato" />
-                <Text style={styles.buttonText}>{text}</Text>
-              </TouchableOpacity>
+                <ButtonText>{text}</ButtonText>
+              </Button>
             )}
-          </View>
+          </TextContainer>
         </LinearGradient>
 
         <StatusBar style="inverted" />
       </ScrollView>
-    </View>
+    </Wrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#121212",
-    flex: 1,
-  },
-  title: {
-    fontSize: 22,
-    color: "#FEF9FF",
-    fontWeight: "800",
-    marginTop: 15,
-  },
-  rate: {
-    fontWeight: "100",
-    fontSize: 16,
-    color: "#FEF9FF",
-    marginBottom: 10,
-  },
-  overview: {
-    fontSize: 18,
-    fontStyle: "italic",
-    color: "#FEF9FF",
-  },
-  poster: {
-    width: width,
-    height: 0.75 * height,
-    resizeMode: "stretch",
-  },
-  no_image: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FEF9FF",
-  },
-  no_genre: {
-    fontSize: 14,
-    color: "#DDD",
-    marginVertical: 10,
-    padding: 3,
-    fontStyle: "italic",
-  },
-  textContainer: {
-    marginTop: height * 0.8,
-    paddingHorizontal: 15,
-    paddingBottom: 15,
-  },
-  addToList: {
-    flexDirection: "row",
-    alignSelf: "flex-end",
-    marginVertical: 10,
-    marginRight: 10,
-  },
-  buttonText: {
-    fontSize: 18,
-    marginLeft: 5,
-    color: "tomato",
-  },
-});

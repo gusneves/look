@@ -2,13 +2,8 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableNativeFeedback,
   StyleSheet,
-  SafeAreaView,
   FlatList,
-  Image,
   Keyboard,
   Platform,
   Alert,
@@ -18,12 +13,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { queryMovie, getDetails, getCredits } from "../services/api";
+import { queryMovie, getDetails, getCredits } from "../../../services/api";
+import { Button, Feedback, Form, Input, ListItem, Poster, TextGradient, Title, Wrapper } from "./styles";
+import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 
 const { width, height } = Dimensions.get("window");
 const ITEM_SIZE = Platform.OS === "ios" ? width * 0.78 : width * 0.8;
 
-export default function Main({ navigation }) {
+export default function MovieSearch({ navigation }) {
   const [result, setResult] = useState([]);
   const [query, setQuery] = useState("");
   const [empty, setEmpty] = useState(false);
@@ -46,9 +43,9 @@ export default function Main({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient style={styles.form} colors={["#121212", "transparent"]}>
-        <TextInput
+    <Wrapper >
+      <Form >
+        <Input
           placeholder="Search for a movie..."
           onChangeText={(text) => setQuery(text)}
           defaultValue={query}
@@ -56,25 +53,21 @@ export default function Main({ navigation }) {
           autoCorrect={false}
           onSubmitEditing={handleSubmit}
         />
-        {Platform.OS == "android" ? (
-          <TouchableNativeFeedback
-            background={TouchableNativeFeedback.Ripple("#2352ff", false)}
+          <Button
+            android_ripple={{
+              color: "#DDD",
+              borderless: false,
+              radius: 25,
+            }}
             onPress={handleSubmit}
           >
-            <View style={styles.button}>
               <MaterialIcons name="search" size={30} color="#121212" />
-            </View>
-          </TouchableNativeFeedback>
-        ) : (
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <MaterialIcons name="search" size={30} color="#121212" />
-          </TouchableOpacity>
-        )}
-      </LinearGradient>
+          </Button>
+      </Form>
       {empty ? (
-        <Text style={{ fontSize: 18, color: "#EDEDED" }}>
+        <Feedback>
           Nothing was found, try again
-        </Text>
+        </Feedback>
       ) : (
         <FlatList
           data={result}
@@ -86,7 +79,7 @@ export default function Main({ navigation }) {
           horizontal={true}
           renderItem={({ item }) => {
             return (
-              <TouchableOpacity
+              <Pressable
                 onPress={() => {
                   let details;
                   getDetails(item.id)
@@ -117,11 +110,10 @@ export default function Main({ navigation }) {
                     width: ITEM_SIZE,
                   }}
                 >
-                  <View style={styles.listItem}>
+                  <ListItem>
                     {item.poster_path ? (
-                      <Image
+                      <Poster
                         source={{ uri: posterpath + item.poster_path }}
-                        style={styles.image}
                       />
                     ) : (
                       <View
@@ -145,88 +137,29 @@ export default function Main({ navigation }) {
                       colors={["#121212", "transparent"]}
                       style={styles.textGradient}
                     >
-                      <Text style={styles.title}>
+                      <Title style={styles.title}>
                         {item.release_date
                           ? item.title +
                             " (" +
                             item.release_date.slice(0, 4) +
                             ")"
                           : item.title + " (----)"}
-                      </Text>
+                      </Title>
                     </LinearGradient>
-                  </View>
+                  </ListItem>
                 </View>
-              </TouchableOpacity>
+              </Pressable>
             );
           }}
         />
       )}
 
       <StatusBar style="inverted" />
-    </SafeAreaView>
+    </Wrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    flex: 1,
-    fontSize: 18,
-    backgroundColor: "#121212",
-  },
-  form: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 40,
-    marginBottom: 0.1 * height,
-  },
-  input: {
-    height: 55,
-    width: 285,
-    backgroundColor: "#FEF9FF",
-    color: "black",
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-    fontSize: 20,
-  },
-  button: {
-    height: 55,
-    width: 55,
-    backgroundColor: "#FEF9FF",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
-  },
-  listItem: {
-    backgroundColor: "#FFF",
-    marginHorizontal: 10,
-    height: 0.65 * height,
-    borderRadius: 24,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
-  },
-  image: {
-    flex: 1,
-    borderRadius: 23,
-    resizeMode: "cover",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#FEF9FF",
-    fontFamily: "Menlo",
-  },
   textGradient: {
     position: "absolute",
     width: "100%",
