@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components/native";
 import { Dimensions } from "react-native";
-const { height } = Dimensions.get("window");
+const { height, width } = Dimensions.get("window");
 
 const bg = (props) => props.theme.background;
 const fg = (props) => props.theme.color;
@@ -27,14 +27,14 @@ export const Form = styled.View`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin: 40px 0px;
-  margin-bottom: ${0.1 * height}px;
+  margin: 25px 0px;
+  margin-bottom: ${0.05 * height}px;
 `;
 
 export const Button = styled.Pressable`
   height: 55px;
   width: 55px;
-  background-color: #fff;
+  background-color: #FFF;
   justify-content: center;
   align-items: center;
   border-radius: 5px;
@@ -44,7 +44,7 @@ export const Button = styled.Pressable`
 export const Input = styled.TextInput`
   height: 55px;
   width: 285px;
-  background-color: #fff;
+  background-color:#FFF;
   color: black;
   padding: 10px;
   border-radius: 5px;
@@ -56,7 +56,7 @@ export const Input = styled.TextInput`
 export const ListItem = styled.View`
   background-color: #fff;
   margin: 0px 10px;
-  height: 523px;
+  height: ${height *0.7}px;
   border-radius: 24px;
   ${shadow}
 `;

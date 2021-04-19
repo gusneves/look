@@ -14,7 +14,17 @@ import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { queryMovie, getDetails, getCredits } from "../../../services/api";
-import { Button, Feedback, Form, Input, ListItem, Poster, TextGradient, Title, Wrapper } from "./styles";
+import {
+  Button,
+  Feedback,
+  Form,
+  Input,
+  ListItem,
+  Poster,
+  TextGradient,
+  Title,
+  Wrapper,
+} from "./styles";
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 
 const { width, height } = Dimensions.get("window");
@@ -43,31 +53,28 @@ export default function MovieSearch({ navigation }) {
   }
 
   return (
-    <Wrapper >
-      <Form >
+    <Wrapper>
+      <Form>
         <Input
           placeholder="Search for a movie..."
           onChangeText={(text) => setQuery(text)}
           defaultValue={query}
-          style={styles.input}
           autoCorrect={false}
           onSubmitEditing={handleSubmit}
         />
-          <Button
-            android_ripple={{
-              color: "#DDD",
-              borderless: false,
-              radius: 25,
-            }}
-            onPress={handleSubmit}
-          >
-              <MaterialIcons name="search" size={30} color="#121212" />
-          </Button>
+        <Button
+          android_ripple={{
+            color: "#DDD",
+            borderless: false,
+            radius: 25,
+          }}
+          onPress={handleSubmit}
+        >
+          <MaterialIcons name="search" size={30} color="#121212" />
+        </Button>
       </Form>
       {empty ? (
-        <Feedback>
-          Nothing was found, try again
-        </Feedback>
+        <Feedback>Nothing was found, try again</Feedback>
       ) : (
         <FlatList
           data={result}
@@ -112,9 +119,7 @@ export default function MovieSearch({ navigation }) {
                 >
                   <ListItem>
                     {item.poster_path ? (
-                      <Poster
-                        source={{ uri: posterpath + item.poster_path }}
-                      />
+                      <Poster source={{ uri: posterpath + item.poster_path }} />
                     ) : (
                       <View
                         style={{
@@ -137,7 +142,7 @@ export default function MovieSearch({ navigation }) {
                       colors={["#121212", "transparent"]}
                       style={styles.textGradient}
                     >
-                      <Title style={styles.title}>
+                      <Title>
                         {item.release_date
                           ? item.title +
                             " (" +
