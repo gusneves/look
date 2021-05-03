@@ -34,7 +34,7 @@ export const Form = styled.View`
 export const Button = styled.Pressable`
   height: 55px;
   width: 55px;
-  background-color: #FFF;
+  background-color: #fff;
   justify-content: center;
   align-items: center;
   border-radius: 5px;
@@ -44,7 +44,7 @@ export const Button = styled.Pressable`
 export const Input = styled.TextInput`
   height: 55px;
   width: 285px;
-  background-color:#FFF;
+  background-color: #fff;
   color: black;
   padding: 10px;
   border-radius: 5px;
@@ -56,7 +56,7 @@ export const Input = styled.TextInput`
 export const ListItem = styled.View`
   background-color: #fff;
   margin: 0px 10px;
-  height: ${height *0.7}px;
+  height: ${height * 0.7}px;
   border-radius: 24px;
   ${shadow}
 `;
@@ -69,11 +69,12 @@ export const Poster = styled.Image`
 export const Title = styled.Text`
   font-size: 18px;
   font-weight: 800;
-  color: #FEF9FF;
+  color: #fef9ff;
   font-family: Menlo;
 `;
 
 export const Feedback = styled.Text`
+  text-align: center;
   font-size: 18px;
   color: ${fg};
 `;

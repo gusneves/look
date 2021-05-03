@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FlatList, Pressable } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ListItem,
   Loading,
@@ -17,6 +17,7 @@ import {
 } from "./styles";
 
 export default function List({ navigation }) {
+  const { t } = useTranslation();
   const [list, setList] = useState();
 
   const posterpath = "https://image.tmdb.org/t/p/original/";
@@ -40,14 +41,14 @@ export default function List({ navigation }) {
   while (list == undefined) {
     return (
       <Wrapper>
-        <Loading> Loading... </Loading>
+        <Loading>{t("list.load")}</Loading>
       </Wrapper>
     );
   }
   if (list.length == 0) {
     return (
       <Wrapper>
-        <Overview>Your list is currently empty</Overview>
+        <Overview>{t("list.overview")}</Overview>
       </Wrapper>
     );
   } else {
@@ -70,7 +71,11 @@ export default function List({ navigation }) {
                       <Poster source={{ uri: posterpath + item.poster_path }} />
                     ) : (
                       <NoImage>
-                        <MaterialIcons name="broken-image" size={45} color="#DDD" />
+                        <MaterialIcons
+                          name="broken-image"
+                          size={45}
+                          color="#DDD"
+                        />
                       </NoImage>
                     )}
                   </PosterContainer>
@@ -84,7 +89,7 @@ export default function List({ navigation }) {
                         : item.title + " (----)"}
                     </Title>
                     <Overview numberOfLines={5}>
-                      {item.overview ? item.overview : "Overview not avaliable"}
+                      {item.overview ? item.overview : t("list.not_avaliable")}
                     </Overview>
                   </MovieText>
                 </ListItem>

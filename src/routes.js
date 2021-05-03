@@ -13,14 +13,18 @@ import { AntDesign, MaterialIcons, Entypo } from "@expo/vector-icons";
 
 import { DrawerContent } from "./components/DrawerContent/DrawerContent";
 
+import { useTranslation } from "react-i18next";
+
 import MovieSearch from "./screens/Movie/Search/MovieSearch";
 import Info from "./screens/Movie/Info/Info";
 import List from "./screens/List/List";
+import Settings from "./screens/Settings/Settings";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function InfoStack({ navigation }) {
+  const { t, i18n } = useTranslation();
   const scheme = useColorScheme();
   const iconColor = scheme === "dark" ? "#FFF" : "#121212";
   return (
@@ -31,7 +35,7 @@ function InfoStack({ navigation }) {
         options={{
           headerShown: true,
           headerTitleAlign: "center",
-
+          title: t("routes.movie_search"),
           headerLeft: () => {
             return (
               <Pressable
@@ -66,7 +70,7 @@ function InfoStack({ navigation }) {
         component={Info}
         options={{
           headerTitleAlign: "center",
-          title: "About",
+          title: t("routes.info"),
         }}
       />
     </Stack.Navigator>
@@ -74,6 +78,7 @@ function InfoStack({ navigation }) {
 }
 
 function ListStack({ navigation }) {
+  const { t, i18n } = useTranslation();
   const scheme = useColorScheme();
   const iconColor = scheme === "dark" ? "#FFF" : "#121212";
 
@@ -83,11 +88,9 @@ function ListStack({ navigation }) {
         name="My List"
         component={List}
         options={{
+          title: t("routes.list"),
           headerShown: true,
           headerTitleAlign: "center",
-          drawerIcon: ({ color }) => {
-            return <AntDesign name="tag" size={24} color={color} />;
-          },
           headerLeft: () => {
             return (
               <Pressable
@@ -122,7 +125,53 @@ function ListStack({ navigation }) {
         component={Info}
         options={{
           headerTitleAlign: "center",
-          title: "About",
+          title: t("routes.info"),
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function SettingsStack({ navigation }) {
+  const { t, i18n } = useTranslation();
+  const scheme = useColorScheme();
+  const iconColor = scheme === "dark" ? "#FFF" : "#121212";
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Settings"
+        component={Settings}
+        options={{
+          title: t("routes.config"),
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerLeft: () => {
+            return (
+              <Pressable
+                style={{
+                  flex: 1,
+                  padding: 15,
+                  paddingLeft: 20,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                android_ripple={{
+                  color: "#DDD",
+                  borderless: false,
+                  radius: 25,
+                }}
+                onPress={() => {
+                  navigation.openDrawer();
+                }}
+              >
+                <Entypo
+                  name="dots-three-vertical"
+                  size={24}
+                  color={iconColor}
+                />
+              </Pressable>
+            );
+          },
         }}
       />
     </Stack.Navigator>
@@ -130,6 +179,7 @@ function ListStack({ navigation }) {
 }
 
 export default function Router() {
+  const { t, i18n } = useTranslation();
   const scheme = useColorScheme();
   return (
     <NavigationContainer theme={scheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -141,8 +191,9 @@ export default function Router() {
           name="Search"
           component={InfoStack}
           options={{
-            drawerIcon: ({ color }) => {
-              return <MaterialIcons name="search" size={24} color={color} />;
+            title: t("routes.movie_search"),
+            drawerIcon: ({ color, size }) => {
+              return <MaterialIcons name="search" size={size} color={color} />;
             },
           }}
         />
@@ -150,8 +201,21 @@ export default function Router() {
           name="My List"
           component={ListStack}
           options={{
-            drawerIcon: ({ color }) => {
-              return <AntDesign name="tag" size={24} color={color} />;
+            title: t("routes.list"),
+            drawerIcon: ({ color, size }) => {
+              return <AntDesign name="tag" size={size} color={color} />;
+            },
+          }}
+        />
+        <Drawer.Screen
+          name="Settings"
+          component={SettingsStack}
+          options={{
+            title: t("routes.config"),
+            drawerIcon: ({ color, size }) => {
+              return (
+                <MaterialIcons name="settings" size={size} color={color} />
+              );
             },
           }}
         />

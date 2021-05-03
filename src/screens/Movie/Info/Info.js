@@ -10,6 +10,7 @@ import { StatusBar } from "expo-status-bar";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
+import {useTranslation} from 'react-i18next'
 
 import Rating from "../../../components/Rating/Rating";
 import Genres from "../../../components/Genres/Genres";
@@ -26,10 +27,12 @@ import {
 } from "./styles";
 
 export default function Info({ navigation, route }) {
+  const { t } = useTranslation();
+
   const [included, setIncluded] = useState(false);
   const [storedMovies, setStoredMovies] = useState();
   const [icon, setIcon] = useState("plus");
-  const [text, setText] = useState("Add to list");
+  const [text, setText] = useState(t('info.button_plus'));
 
   const {
     title,
@@ -52,15 +55,14 @@ export default function Info({ navigation, route }) {
   useEffect(() => {
     if (included) {
       setIcon("minus");
-      setText("Remove from list");
+      setText(t('info.button_minus'));
     } else {
       setIcon("plus");
-      setText("Add to list");
+      setText(t('info.button_plus'));
     }
   }, [included]);
 
   async function removeFromList() {
-    console.log("REMOVENDO-------------");
     let array = storedMovies.filter((value) => {
       return value.id != id;
     });
@@ -70,7 +72,6 @@ export default function Info({ navigation, route }) {
   }
 
   async function addToList() {
-    console.log("ADICIONANDO-------------");
     try {
       console.log(title);
       console.log(storedMovies);
@@ -91,12 +92,11 @@ export default function Info({ navigation, route }) {
         },
       ];
       setStoredMovies(next);
-      console.log("DEPOIS-----------");
       console.log(next);
       await AsyncStorage.setItem("list", JSON.stringify(next));
       setIncluded(true);
     } catch (error) {
-      Alert.alert("Failed to add to list", error.message);
+      Alert.alert(t('info.error_add'), t('info.error_message'));
     }
   }
 
@@ -113,7 +113,7 @@ export default function Info({ navigation, route }) {
         setStoredMovies(JSON.parse(jsonValue));
       }
     } catch (error) {
-      Alert.alert("Failed to get list", error.message);
+      Alert.alert(t('info.get'), t('info.error_message'));
     }
   }
 
@@ -145,12 +145,12 @@ export default function Info({ navigation, route }) {
             <Genres genres={genres} />
 
             <Director>
-              Directed by:{" "}
-              {director === undefined ? "director not found" : director.name}
+              {t('info.director')}{" "}
+              {director === undefined ? t('info.no_director') : director.name}
             </Director>
-            <Director>Duration: {runtime} min</Director>
+            <Director>{t('info.runtime')}{runtime} min</Director>
             <Overview>
-              {overview ? overview : "Overview not avaliable"}
+              {overview ? overview : t('info.no_overview')}
             </Overview>
 
             {included ? (

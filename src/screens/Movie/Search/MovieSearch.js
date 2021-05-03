@@ -8,10 +8,12 @@ import {
   Platform,
   Alert,
   Dimensions,
+  Pressable,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 import { queryMovie, getDetails, getCredits } from "../../../services/api";
 import {
@@ -21,16 +23,17 @@ import {
   Input,
   ListItem,
   Poster,
-  TextGradient,
   Title,
   Wrapper,
 } from "./styles";
-import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 
 const { width, height } = Dimensions.get("window");
 const ITEM_SIZE = Platform.OS === "ios" ? width * 0.78 : width * 0.8;
 
 export default function MovieSearch({ navigation }) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language == "en" ? "en-US" : "pt-BR";
+
   const [result, setResult] = useState([]);
   const [query, setQuery] = useState("");
   const [empty, setEmpty] = useState(false);
@@ -39,24 +42,26 @@ export default function MovieSearch({ navigation }) {
 
   function handleSubmit() {
     Keyboard.dismiss();
-    queryMovie(query)
-      .then(({ data }) => {
-        if (data.total_results == 0) setEmpty(true);
-        else {
-          setEmpty(false);
-          setResult(data.results);
-        }
-      })
-      .catch((e) => {
-        Alert.alert("Error", e.message);
-      });
+    if (query !== "") {
+      queryMovie(query, lang)
+        .then(({ data }) => {
+          if (data.total_results == 0) setEmpty(true);
+          else {
+            setEmpty(false);
+            setResult(data.results);
+          }
+        })
+        .catch((e) => {
+          Alert.alert("Error", e.message);
+        });
+    }
   }
 
   return (
     <Wrapper>
       <Form>
         <Input
-          placeholder="Search for a movie..."
+          placeholder={t("movie_search.placeholder")}
           onChangeText={(text) => setQuery(text)}
           defaultValue={query}
           autoCorrect={false}
@@ -74,7 +79,7 @@ export default function MovieSearch({ navigation }) {
         </Button>
       </Form>
       {empty ? (
-        <Feedback>Nothing was found, try again</Feedback>
+        <Feedback>{t("movie_search.feedback")}</Feedback>
       ) : (
         <FlatList
           data={result}
@@ -89,11 +94,11 @@ export default function MovieSearch({ navigation }) {
               <Pressable
                 onPress={() => {
                   let details;
-                  getDetails(item.id)
+                  getDetails(item.id, lang)
                     .then(async ({ data }) => {
                       details = data;
 
-                      getCredits(item.id)
+                      getCredits(item.id, lang)
                         .then(({ data }) => {
                           details = {
                             ...details,
@@ -134,7 +139,7 @@ export default function MovieSearch({ navigation }) {
                           color="#aaa"
                         />
                         <Text style={{ fontSize: 14, color: "#ddd" }}>
-                          No image avaliable
+                          {t("movie_search.no_image")}
                         </Text>
                       </View>
                     )}
